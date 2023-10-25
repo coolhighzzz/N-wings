@@ -1,0 +1,81 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N-Panel | Node APP</title>
+  <style>
+    body {
+      background-color: #303030; /* Dark Grey */
+      color: #b39ddb; /* Purple */
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    #console {
+      background-color: #1e1e1e; /* Darker Grey */
+      color: #b39ddb; /* Purple */
+      padding: 10px;
+      margin-bottom: 20px;
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
+    button {
+      background-color: #9575cd; /* Light Purple */
+      color: #ffffff; /* White */
+      padding: 10px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    input {
+      padding: 5px;
+      margin-right: 10px;
+    }
+
+    #execute-btn {
+      background-color: #009688; /* Teal */
+    }
+  </style>
+</head>
+<body>
+  <h1>N-Panel</h1>
+  <button onclick="startServer()">Start Server</button>
+  <button onclick="stopServer()">Stop Server</button>
+  <div id="console"></div>
+
+  <input type="text" id="commandInput" placeholder="Enter command">
+  <button id="execute-btn" onclick="executeCommand()">Execute Command</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('update', (data) => {
+      document.getElementById('console').innerHTML += `<p>${data}</p>`;
+      // Scroll to the bottom to show the latest updates
+      document.getElementById('console').scrollTop = document.getElementById('console').scrollHeight;
+    });
+
+    function startServer() {
+      socket.emit('start');
+    }
+
+    function stopServer() {
+      socket.emit('stop');
+    }
+
+    function executeCommand() {
+      const commandInput = document.getElementById('commandInput');
+      const command = commandInput.value.trim();
+
+      if (command) {
+        socket.emit('execute', command);
+        commandInput.value = ''; // Clear the input
+      }
+    }
+  </script>
+</body>
+</html>
